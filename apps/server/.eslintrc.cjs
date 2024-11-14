@@ -8,14 +8,14 @@ module.exports = {
     jest: true,
   },
   parserOptions: {
-    project: "./tsconfig.json",
+    project: true,
   },
   ignorePatterns: [
     ".eslintrc.cjs",
     "jest.config.js",
     "jestSetup.ts",
     "babel.config.js",
-    "cypress.config.*.ts",
+    "cypress.config.ts",
     "cypress/**/*",
     "baseCypressConfig.ts",
   ],
