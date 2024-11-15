@@ -1,6 +1,5 @@
-// Do not remove seemingly unused exports here unless you
-// check all forked Adapter repositories
-// Example: JobTypes is used in the MX Adapter fork
+// Do not remove seemingly unused exports here unless you are absolutely sure
+// you know what you're doing. They may be used by forked Adapter repositories
 
 export enum WidgetJobTypes {
   AGGREGATION = 0,
@@ -30,9 +29,18 @@ export enum JobTypes {
   IDENTITY = "identity",
 }
 
+export enum MappedJobTypes {
+  AGGREGATE = "aggregate",
+  ALL = "aggregate_identity_verification",
+  FULLHISTORY = "aggregate_extendedhistory",
+  VERIFICATION = "verification",
+  IDENTITY = "aggregate_identity",
+}
+
 export type AdapterMap = {
   vcAdapter: Function;
   widgetAdapter: WidgetAdapter;
+  testInstitutionAdapterName?: string;
 };
 
 export interface Credential {

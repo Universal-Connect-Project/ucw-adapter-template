@@ -1,44 +1,40 @@
+import type { VCDependencies } from "models";
+import { getVc as getSophtronVc } from "./getVc";
 import { VCDataTypes } from "@repo/utils";
-import { getVC } from "./getVc";
-import type { VCDependencies } from "./models";
 
-const createMXGetVC = (isProd: boolean, dependencies: VCDependencies) => {
+export const createSophtronVC = async (dependencies: VCDependencies) => {
   return async ({
-                  connectionId,
-                  type,
-                  userId,
-                  accountId
-                }: {
-    connectionId: string
-    type: string
-    userId: string
-    accountId?: string
+     accountId,
+     connectionId,
+     endTime,
+     startTime,
+     type,
+     userId,
+   }: {
+    connectionId: string;
+    type: VCDataTypes;
+    userId: string;
+    accountId?: string;
+    startTime?: string;
+    endTime?: string;
   }) => {
+
     let path = "";
-    const { logClient, aggregatorCredentials } = dependencies;
 
     switch (type) {
       case VCDataTypes.IDENTITY:
-        path = `users/${userId}/members/${connectionId}/customers?filters=name,addresses`;
+        path = `customers/${userId}/members/${connectionId}/identity`;
         break;
       case VCDataTypes.ACCOUNTS:
-        path = `users/${userId}/members/${connectionId}/accounts`;
+        path = `customers/${userId}/members/${connectionId}/accounts`;
         break;
       case VCDataTypes.TRANSACTIONS:
-        path = `users/${userId}/accounts/${accountId}/transactions`;
+        path = `customers/${userId}/accounts/${accountId}/transactions?startTime=${startTime}&endTime=${endTime}`;
         break;
       default:
         break;
     }
 
-    logClient.info(`Getting mx vc ${type}`, path);
-
-    return await getVC(path, isProd, {
-      logClient,
-      aggregatorCredentials
-    });
-  };
+    return await getSophtronVc(path, dependencies);
+  }
 };
-
-export const createMxProdGetVC = (dependencies: VCDependencies) => createMXGetVC(true, dependencies);
-export const createMxIntGetVC = (dependencies: VCDependencies) => createMXGetVC(false, dependencies);

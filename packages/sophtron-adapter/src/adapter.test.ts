@@ -32,7 +32,29 @@ import {
 import { server } from "./test/testServer";
 import { SophtronAdapter } from "./adapter";
 
-const adapter = new SophtronAdapter();
+import { logClient } from "./test/utils/logClient";
+import { httpClient } from "./test/utils/httpClient";
+
+export const aggregatorCredentials = {
+  sophtron: {
+    username: null,
+    password: null,
+    basePath: "https://int-api.mx.com",
+    vcEndpoint: "https://int-api.mx.com/",
+    aggregator: "mx_int",
+    available: true,
+  }
+}
+const adapter = new SophtronAdapter({
+  dependencies: {
+    logClient,
+    httpClient,
+    aggregatorCredentials,
+    envConfig: {
+      HOSTURL: undefined,
+    },
+  },
+});
 
 const testId = "testId";
 const testUserId = "testUserId";

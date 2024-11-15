@@ -1,40 +1,31 @@
-import get from "axios";
-import type { VCDependencies } from "./models";
+import axios from "axios";
+import type { AdapterConfig, VCDependencies } from "models";
+import { buildSophtronAuthCode } from "./utils";
+import SophtronClient from "./apiClient.v1";
 
-export const getVC = async (path: string, isProd: boolean, dependencies: VCDependencies): Promise<any> => {
-  const { logClient, aggregatorCredentials } = dependencies;
+interface VcResponse {
+  vc: string;
+}
 
-  const configuration = isProd
-    ? aggregatorCredentials.mxProd
-    : aggregatorCredentials.mxInt;
+export const getVc = async (path: string, args: VCDependencies) => {
+  const { aggregatorCredentials } = args;
+  const { clientId, secret, vcEndpoint } = aggregatorCredentials.sophtron;
 
-  const authHeader =
-    "Basic " +
-    Buffer.from(configuration.username + ":" + configuration.password).toString(
-      "base64"
-    );
+  const sophtronClient = new SophtronClient(args as AdapterConfig);
 
-  const url = `${configuration.basePath}/vc/${path}`;
+  const res = await sophtronClient.getUserIntegrationKey();
+  const headers = {
+    IntegrationKey: res.IntegrationKey,
+    Authorization: buildSophtronAuthCode("get", path, clientId, secret),
+  };
 
-  return get({
-    url,
-    headers: {
-      Accept: "application/vnd.mx.api.v1beta+json",
-      "content-type": "application/json",
-      Authorization: authHeader
-    }
-  })
-    .then((res) => {
-      logClient.debug(`mx vc client http response status ${res.status} from ${url}`);
-      return res.data?.verifiableCredential;
+  const ret: VcResponse = (
+    await axios({
+      url: `${vcEndpoint}vc/${path}`,
+      method: "get",
+      headers,
     })
-    .catch((err) => {
-      logClient.error(
-        `mx vc client http response status ${err.response?.status} from ${url}`,
-        err.response?.data || err
-      );
+  ).data;
 
-      throw new Error("MX VC endpoint failure");
-    });
+  return ret?.vc;
 };
-

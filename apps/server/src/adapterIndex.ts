@@ -10,7 +10,7 @@ export function getAggregatorAdapter(aggregator: Aggregator): WidgetAdapter {
     return widgetAdapter
   }
 
-  throw new Error(`Unsupported aggregator ${aggregator}`)
+  throw new Error(`Unsupported aggregator ${aggregator as string}`)
 }
 
 export async function getVC({
@@ -45,5 +45,5 @@ export async function getVC({
     })
   }
 
-  throw new Error(`Unsupported aggregator ${aggregator}`)
+  throw new Error(`Unsupported aggregator ${aggregator as string}`)
 }

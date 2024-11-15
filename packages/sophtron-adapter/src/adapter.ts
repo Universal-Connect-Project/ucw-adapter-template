@@ -1,4 +1,3 @@
-import aggregatorCredentials from "./aggregatorCredentials";
 import type {
   Challenge,
   Connection,
@@ -8,18 +7,17 @@ import type {
   UpdateConnectionRequest,
   WidgetAdapter,
 } from "@repo/utils";
-import { ChallengeType, ConnectionStatus, JobTypes } from "../shared/contract";
-import { mapJobType } from "../utils";
+import {
+  ChallengeType,
+  ConnectionStatus,
+  JobTypes,
+  mapJobType,
+} from "@repo/utils";
 
-import type { AdapterConfig, CacheClient, LogClient } from "./models";
+import type { AdapterConfig, LogClient } from "./models";
 
-import { debug, error, trace } from "../infra/logger";
-import SophtronClientV1 from "../aggregatorApiClients/sophtronClient";
-import SophtronClient from "../aggregatorApiClients/sophtronClient/v2";
-
-let cacheClient: CacheClient;
-let logClient: LogClient;
-let envConfig: Record<string, string>;
+import SophtronClientV1 from "./apiClient.v1";
+import SophtronClient from "./apiClient.v2";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function fromSophtronInstitution(ins: any): Institution | undefined {
@@ -38,15 +36,20 @@ function fromSophtronInstitution(ins: any): Institution | undefined {
 export class SophtronAdapter implements WidgetAdapter {
   aggregator = "sophtron";
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  apiClient: any;
+  apiClient: SophtronClient;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  apiClientV1: any;
-
+  apiClientV1: SophtronClientV1;
+  logClient: LogClient;
+  envConfig: Record<string, string>;
   RouteHandlers = {};
 
   constructor(args: AdapterConfig) {
-    this.apiClient = new SophtronClient(aggregatorCredentials.sophtron);
-    this.apiClientV1 = new SophtronClientV1(aggregatorCredentials.sophtron);
+    const { dependencies } = args;
+
+    this.logClient = dependencies.logClient;
+    this.envConfig = dependencies.envConfig;
+    this.apiClient = new SophtronClient(args);
+    this.apiClientV1 = new SophtronClientV1(args);
   }
 
   async GetInstitutionById(id: string): Promise<Institution> {
@@ -306,7 +309,7 @@ export class SophtronAdapter implements WidgetAdapter {
         break;
     }
     if (!answer) {
-      error("Wrong challenge answer received", c);
+      this.logClient.error("Wrong challenge answer received", c);
       return false;
     }
     await this.apiClient.answerJobMfa(jobId, c.id, answer);
@@ -315,20 +318,24 @@ export class SophtronAdapter implements WidgetAdapter {
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
   async ResolveUserId(user_id: string, failIfNotFound: boolean = false) {
-    debug("Resolving UserId: " + user_id);
+    this.logClient.debug("Resolving UserId: " + user_id);
     const sophtronUser = await this.apiClient.getCustomerByUniqueName(user_id);
     if (sophtronUser) {
-      trace(`Found existing sophtron customer ${sophtronUser.CustomerID}`);
+      this.logClient.trace(
+        `Found existing sophtron customer ${sophtronUser.CustomerID}`,
+      );
       return sophtronUser.CustomerID;
     } else if (failIfNotFound) {
       throw new Error("User not resolved successfully");
     }
-    trace(`Creating sophtron user ${user_id}`);
+    this.logClient.trace(`Creating sophtron user ${user_id}`);
     const ret = await this.apiClient.createCustomer(user_id);
     if (ret) {
       return ret.CustomerID;
     }
-    trace(`Failed creating sophtron user, using user_id: ${user_id}`);
+    this.logClient.trace(
+      `Failed creating sophtron user, using user_id: ${user_id}`,
+    );
     return user_id;
   }
 }
