@@ -47,10 +47,10 @@ cypress.env.json
 cypress/screenshots/
 cypress/videos/
 apps/server/cypress/screenshots
-/test-results/
-/playwright-report/
+/packages/mx-adapter/test-results/
+/packages/mx-adapter/playwright-report/
 /blob-report/
-/playwright/.cache/
+/packages/mx-adapter/playwright/.cache/
 
 apps/server/cachedDefaults/preferences.json
 *.rdb

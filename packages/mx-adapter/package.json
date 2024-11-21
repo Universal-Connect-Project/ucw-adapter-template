@@ -23,8 +23,8 @@
   "scripts": {
     "dev": "nodemon",
     "dev:e2e": "npm run dev",
-    "cypress:open": "cypress open --config-file cypress.config.js",
-    "cypress:run": "cypress run --config-file cypress.config.js",
+    "cypress:open": "cypress open --config-file cypress.config.ts",
+    "cypress:run": "cypress run --config-file cypress.config.ts",
     "build:cjs": "tsc -p tsconfig.cjs.json",
     "build:esm": "tsc -p tsconfig.esm.json",
     "build": "npm run clean && npm run build:cjs && npm run build:esm && npm run rename:esm",
@@ -32,6 +32,8 @@
     "pack": "npm run clean && npm run build && npm pack",
     "lint": "eslint . --ext .js,.ts",
     "lint:fix": "eslint . --fix --ext .js,.ts",
+    "playwright": "playwright test --ui",
+    "playwright:test": "playwright test --ui",
     "test": "jest --no-coverage",
     "test:watch": "npx -y cross-env DEBUG_PRINT_LIMIT=50000 jest --no-coverage --watch",
     "rename:esm": "./scripts/rename-esm.sh",
@@ -54,6 +56,7 @@
     "mx-platform-node": "^0.43.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.47.2",
     "@repo/utils-dev-dependency": "*",
     "@testing-library/cypress": "^10.0.2",
     "@typescript-eslint/eslint-plugin": "^6.20.0",
