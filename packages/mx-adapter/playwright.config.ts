@@ -38,6 +38,7 @@ export default defineConfig({
   ],
   webServer: {
     command: "npm run dev:e2e",
+    cwd: "../../",
     url: "http://127.0.0.1:8080",
     reuseExistingServer: !process.env.CI,
   },
