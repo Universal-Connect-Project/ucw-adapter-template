@@ -33,7 +33,7 @@
     "lint": "eslint . --ext .js,.ts",
     "lint:fix": "eslint . --fix --ext .js,.ts",
     "playwright": "playwright test --ui",
-    "playwright:test": "playwright test --ui",
+    "playwright:test": "playwright test",
     "test": "jest --no-coverage",
     "test:watch": "npx -y cross-env DEBUG_PRINT_LIMIT=50000 jest --no-coverage --watch",
     "rename:esm": "./scripts/rename-esm.sh",
