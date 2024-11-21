@@ -951,7 +951,7 @@ describe("mx aggregator", () => {
             http.get(CONNECTION_BY_ID_PATH, () =>
               HttpResponse.json(memberStatusData),
             ),
-          )
+          );
 
           const req = {
             connectApi: {

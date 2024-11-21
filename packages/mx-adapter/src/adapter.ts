@@ -6,7 +6,7 @@ import type {
   Institution,
   KeyValuePair,
   UpdateConnectionRequest,
-  WidgetAdapter
+  WidgetAdapter,
 } from "@repo/utils";
 import { ChallengeType, ConnectionStatus } from "@repo/utils";
 import type {
@@ -14,7 +14,7 @@ import type {
   CredentialResponse,
   CredentialsResponseBody,
   MemberResponse,
-  MxPlatformApiFactory
+  MxPlatformApiFactory,
 } from "mx-platform-node";
 
 import { MxIntApiClient, MxProdApiClient } from "./apiClient";
@@ -34,14 +34,17 @@ const mapCredentials = (mxCreds: CredentialsResponseBody): Credential[] => {
       id: item.guid || "",
       label: item.field_name || "",
       field_type: item.field_type || "",
-      field_name: item.field_name || ""
+      field_name: item.field_name || "",
     }));
   } else {
     return [];
   }
 };
 
-const fromMxMember = (member: MemberResponse, aggregator: string): Connection => {
+const fromMxMember = (
+  member: MemberResponse,
+  aggregator: string,
+): Connection => {
   return {
     id: member?.guid || null,
     cur_job_id: member.guid,
@@ -50,7 +53,7 @@ const fromMxMember = (member: MemberResponse, aggregator: string): Connection =>
     is_being_aggregated: member.is_being_aggregated,
     is_oauth: member.is_oauth,
     oauth_window_uri: member.oauth_window_uri,
-    aggregator
+    aggregator,
   };
 };
 
@@ -72,7 +75,7 @@ export class MxAdapter implements WidgetAdapter {
       }
       const ret = await req.connectApi.loadMemberByGuid(req.params.member_guid);
       res.send(ret);
-    }
+    },
   };
 
   constructor(args: AdapterConfig) {
@@ -92,16 +95,17 @@ export class MxAdapter implements WidgetAdapter {
     const institution = res.data?.institution;
     return {
       id: institution?.code || null,
-      logo_url: institution?.medium_logo_url ?? institution?.small_logo_url ?? null,
+      logo_url:
+        institution?.medium_logo_url ?? institution?.small_logo_url ?? null,
       name: institution?.name || "",
       oauth: institution?.supports_oauth || false,
       url: institution?.url || "",
-      aggregator: this.aggregator
+      aggregator: this.aggregator,
     };
   }
 
   async ListInstitutionCredentials(
-    institutionId: string
+    institutionId: string,
   ): Promise<Credential[]> {
     const res = await this.apiClient.listInstitutionCredentials(institutionId);
     return mapCredentials(res.data);
@@ -111,14 +115,15 @@ export class MxAdapter implements WidgetAdapter {
     const res = await this.apiClient.listMembers(userId);
 
     return (
-      res.data.members?.map((member) => fromMxMember(member, this.aggregator)) ??
-      []
+      res.data.members?.map((member) =>
+        fromMxMember(member, this.aggregator),
+      ) ?? []
     );
   }
 
   async ListConnectionCredentials(
     memberId: string,
-    userId: string
+    userId: string,
   ): Promise<Credential[]> {
     const res = await this.apiClient.listMemberCredentials(memberId, userId);
     return mapCredentials(res.data);
@@ -126,21 +131,23 @@ export class MxAdapter implements WidgetAdapter {
 
   async CreateConnection(
     request: CreateConnectionRequest,
-    userId?: string
+    userId?: string,
   ): Promise<Connection> {
     const jobType = request.initial_job_type;
     const entityId = request.institution_id;
     try {
       const existings = await this.apiClient.listMembers(userId || "");
       const existing = existings?.data?.members?.find(
-        (m) => m.institution_code === entityId
+        (m) => m.institution_code === entityId,
       );
       if (existing != null) {
-        logClient.info(`Found existing member for institution ${entityId}, deleting`);
+        logClient.info(
+          `Found existing member for institution ${entityId}, deleting`,
+        );
         await this.apiClient.deleteMember(existing?.guid || "", userId || "");
       }
     } catch (e) {
-      console.log('---------------------------> error', e);
+      console.log("---------------------------> error", e);
       logClient.error(e);
     }
     // let res = await this.apiClient.listInstitutionCredentials(entityId)
@@ -157,11 +164,11 @@ export class MxAdapter implements WidgetAdapter {
           (c) =>
             ({
               guid: c.id,
-              value: c.value
-            }) satisfies CredentialRequest
+              value: c.value,
+            }) satisfies CredentialRequest,
         ),
-        institution_code: entityId
-      }
+        institution_code: entityId,
+      },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
 
@@ -169,25 +176,36 @@ export class MxAdapter implements WidgetAdapter {
 
     if (!request?.is_oauth) {
       if (
-        ["verification", "aggregate_identity_verification"].includes(jobType || "")
+        ["verification", "aggregate_identity_verification"].includes(
+          jobType || "",
+        )
       ) {
         const updatedMemberRes = await this.apiClient.verifyMember(
           member?.guid || "",
-          userId || ""
+          userId || "",
         );
-        return fromMxMember(updatedMemberRes?.data?.member || {}, this.aggregator);
+        return fromMxMember(
+          updatedMemberRes?.data?.member || {},
+          this.aggregator,
+        );
       } else if (jobType === "aggregate_identity") {
         const updatedMemberRes = await this.apiClient.identifyMember(
           member?.guid || "",
-          userId || ""
+          userId || "",
         );
-        return fromMxMember(updatedMemberRes?.data?.member || {}, this.aggregator);
+        return fromMxMember(
+          updatedMemberRes?.data?.member || {},
+          this.aggregator,
+        );
       } else if (jobType === "aggregate_extendedhistory") {
         const updatedMemberRes = await this.apiClient.extendHistory(
           member?.guid || "",
-          userId || ""
+          userId || "",
         );
-        return fromMxMember(updatedMemberRes?.data?.member || {}, this.aggregator);
+        return fromMxMember(
+          updatedMemberRes?.data?.member || {},
+          this.aggregator,
+        );
       }
     }
 
@@ -205,7 +223,7 @@ export class MxAdapter implements WidgetAdapter {
 
   async UpdateConnection(
     request: UpdateConnectionRequest,
-    userId?: string
+    userId?: string,
   ): Promise<Connection> {
     let ret;
 
@@ -213,23 +231,44 @@ export class MxAdapter implements WidgetAdapter {
       if (request.job_type === "verification") {
         ret = await this.apiClient.verifyMember(request.id || "", userId || "");
       } else if (request.job_type === "aggregate_identity") {
-        ret = await this.apiClient.identifyMember(request.id || "", userId || "", {
-          data: { member: { include_transactions: true } }
-        });
+        ret = await this.apiClient.identifyMember(
+          request.id || "",
+          userId || "",
+          {
+            data: { member: { include_transactions: true } },
+          },
+        );
       } else if (request.job_type === "aggregate_extendedhistory") {
-        ret = await this.apiClient.extendHistory(request.id || "", userId || "");
+        ret = await this.apiClient.extendHistory(
+          request.id || "",
+          userId || "",
+        );
       } else {
-        ret = await this.apiClient.aggregateMember(request.id || "", userId || "");
+        ret = await this.apiClient.aggregateMember(
+          request.id || "",
+          userId || "",
+        );
       }
     } catch (e: any) {
-      if (e?.response?.data?.error?.message === EXTENDED_HISTORY_NOT_SUPPORTED_MSG) {
+      if (
+        e?.response?.data?.error?.message === EXTENDED_HISTORY_NOT_SUPPORTED_MSG
+      ) {
         try {
-          ret = await this.apiClient.aggregateMember(request.id || "", userId || "");
+          ret = await this.apiClient.aggregateMember(
+            request.id || "",
+            userId || "",
+          );
         } catch (e: any) {
-          return { id: request.id || "", error_message: e?.response?.data?.error?.message };
+          return {
+            id: request.id || "",
+            error_message: e?.response?.data?.error?.message,
+          };
         }
       } else {
-        return { id: request.id || "", error_message: e?.response?.data?.error?.message };
+        return {
+          id: request.id || "",
+          error_message: e?.response?.data?.error?.message,
+        };
       }
     }
 
@@ -238,7 +277,7 @@ export class MxAdapter implements WidgetAdapter {
 
   async UpdateConnectionInternal(
     request: UpdateConnectionRequest,
-    userId: string
+    userId: string,
   ): Promise<Connection> {
     const ret = await this.apiClient.updateMember(request.id || "", userId, {
       member: {
@@ -246,10 +285,10 @@ export class MxAdapter implements WidgetAdapter {
           (credential) =>
             ({
               guid: credential.id,
-              value: credential.value
-            }) satisfies CredentialRequest
-        )
-      }
+              value: credential.value,
+            }) satisfies CredentialRequest,
+        ),
+      },
     });
     const member = ret.data.member;
     return fromMxMember(member || {}, this.aggregator);
@@ -257,7 +296,7 @@ export class MxAdapter implements WidgetAdapter {
 
   async GetConnectionById(
     connectionId: string,
-    userId?: string
+    userId?: string,
   ): Promise<Connection> {
     const res = await this.apiClient.readMember(connectionId, userId || "");
     const member = res.data.member;
@@ -268,7 +307,7 @@ export class MxAdapter implements WidgetAdapter {
       is_being_aggregated: member?.is_being_aggregated,
       oauth_window_uri: member?.oauth_window_uri,
       aggregator: this.aggregator,
-      user_id: userId
+      user_id: userId,
     };
   }
 
@@ -276,7 +315,7 @@ export class MxAdapter implements WidgetAdapter {
     memberId: string,
     jobId: string,
     singleAccountSelect?: boolean,
-    userId?: string
+    userId?: string,
   ): Promise<Connection> {
     const res = await this.apiClient.readMemberStatus(memberId, userId || "");
     const member = res.data.member;
@@ -301,7 +340,7 @@ export class MxAdapter implements WidgetAdapter {
         const challenge: Challenge = {
           id: item.guid ?? `${idx}`,
           type: ChallengeType.QUESTION,
-          question: item.label
+          question: item.label,
         };
         switch (item.type) {
           case "TEXT":
@@ -313,7 +352,7 @@ export class MxAdapter implements WidgetAdapter {
             challenge.question = item.label;
             challenge.data = (item.options ?? []).map((o) => ({
               key: o.label ?? o.value,
-              value: o.value
+              value: o.value,
             })) as KeyValuePair[];
             break;
           case "TOKEN":
@@ -328,36 +367,36 @@ export class MxAdapter implements WidgetAdapter {
             challenge.type = ChallengeType.IMAGE_OPTIONS;
             challenge.data = (item.image_options ?? []).map((io) => ({
               key: io.label ?? io.value,
-              value: io.data_uri ?? io.value
+              value: io.data_uri ?? io.value,
             })) as KeyValuePair[];
             break;
           default:
             break; // todo?
         }
         return challenge;
-      })
+      }),
     };
   }
 
   async AnswerChallenge(
     request: UpdateConnectionRequest,
     jobId: string,
-    userId?: string
+    userId?: string,
   ): Promise<boolean> {
     await this.apiClient.resumeAggregation(request.id || "", userId || "", {
       member: {
         challenges: request.challenges?.map((item, idx) => ({
           guid: item.id ?? `${idx}`,
-          value: item.response as string
-        }))
-      }
+          value: item.response as string,
+        })),
+      },
     });
     return true;
   }
 
   async ResolveUserId(
     userId: string,
-    failIfNotFound: boolean = false
+    failIfNotFound: boolean = false,
   ): Promise<string> {
     logClient.debug("Resolving UserId: " + userId);
 
@@ -376,7 +415,7 @@ export class MxAdapter implements WidgetAdapter {
 
     try {
       ret = await this.apiClient.createUser({
-        user: { id: userId }
+        user: { id: userId },
       });
 
       if (ret?.data?.user != null) {
