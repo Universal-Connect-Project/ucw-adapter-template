@@ -2,18 +2,16 @@ import { VCDataTypes } from "@repo/utils";
 import { getVC } from "./getVc";
 import type { VCDependencies } from "./models";
 
-const createMXGetVC = (isProd: boolean, dependencies: VCDependencies) => {
-  return async ({
-                  connectionId,
-                  type,
-                  userId,
-                  accountId
-                }: {
-    connectionId: string
-    type: string
-    userId: string
-    accountId?: string
-  }) => {
+export interface DataParameters {
+  connectionId: string;
+  type: string;
+  userId: string;
+  accountId?: string;
+}
+
+const createMXGetVC =
+  (isProd: boolean, dependencies: VCDependencies) =>
+  async ({ connectionId, type, userId, accountId }: DataParameters) => {
     let path = "";
     const { logClient, aggregatorCredentials } = dependencies;
 
@@ -35,10 +33,11 @@ const createMXGetVC = (isProd: boolean, dependencies: VCDependencies) => {
 
     return await getVC(path, isProd, {
       logClient,
-      aggregatorCredentials
+      aggregatorCredentials,
     });
   };
-};
 
-export const createMxProdGetVC = (dependencies: VCDependencies) => createMXGetVC(true, dependencies);
-export const createMxIntGetVC = (dependencies: VCDependencies) => createMXGetVC(false, dependencies);
+export const createMxProdGetVC = (dependencies: VCDependencies) =>
+  createMXGetVC(true, dependencies);
+export const createMxIntGetVC = (dependencies: VCDependencies) =>
+  createMXGetVC(false, dependencies);

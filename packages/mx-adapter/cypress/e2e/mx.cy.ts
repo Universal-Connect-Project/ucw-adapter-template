@@ -2,7 +2,7 @@ import { JobTypes } from "@repo/utils";
 import {
   clickContinue,
   expectConnectionSuccess,
-  generateVcDataTests,
+  generateDataTests,
   refreshAConnection,
   visitWithPostMessageSpy,
 } from "@repo/utils-dev-dependency";
@@ -21,7 +21,7 @@ const makeAConnection = async (jobType) => {
 };
 
 describe("mx aggregator", () => {
-  generateVcDataTests({ makeAConnection });
+  generateDataTests({ makeAConnection, shouldTestVcEndpoint: true });
 
   it("refreshes an mx connection if given the correct parameters and hides the back button", () => {
     refreshAConnection({
