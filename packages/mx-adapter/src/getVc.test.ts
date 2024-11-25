@@ -1,5 +1,4 @@
 import { http, HttpResponse } from "msw";
-import { aggregatorCredentials, cacheClient } from "./adapter.test";
 
 import { getVC } from "./getVc";
 import type { AdapterDependencies } from "./models";
@@ -12,12 +11,14 @@ import { mxVcAccountsData } from "./test/testData/mxVcData";
 import { server } from "./test/testServer";
 
 import { logClient } from "./test/utils/logClient";
+import { createClient } from "./test/utils/cacheClient";
+import { aggregatorCredentials } from "./test/testData/aggregatorCredentials";
 
 const accountsPath = "users/userId/members/connectionId/accounts";
 
 const dependencies: AdapterDependencies = {
   logClient,
-  cacheClient,
+  cacheClient: createClient(),
   aggregatorCredentials,
   envConfig: {
     HOSTURL: undefined,

@@ -31,7 +31,8 @@ export enum JobTypes {
 }
 
 export type AdapterMap = {
-  vcAdapter: Function;
+  dataAdapter?: Function;
+  vcAdapter?: Function;
   widgetAdapter: WidgetAdapter;
 };
 
@@ -162,6 +163,16 @@ export interface UpdateConnectionRequest {
   challenges?: Challenge[];
 }
 
+export interface VCAdapterInput {
+  accountId?: string;
+  connectionId?: string;
+  endTime?: string;
+  aggregator: string;
+  startTime?: string;
+  type: VCDataTypes;
+  userId: string;
+}
+
 export interface WidgetAdapter {
   ResolveUserId: (id: string, failIfNotFound?: boolean) => Promise<string>;
   GetInstitutionById: (id: string) => Promise<Institution>;
@@ -196,5 +207,6 @@ export interface WidgetAdapter {
     single_account_select?: boolean,
     userId?: string,
   ) => Promise<Connection | undefined>;
-  RouteHandlers?: Record<string, (req: any, res: any) => Promise<void>>;
+  RouteHandlers?: Record<string, (req: any, res: any) => void>;
+  DataRequestValidators?: Record<string, (req: any) => string | undefined>;
 }

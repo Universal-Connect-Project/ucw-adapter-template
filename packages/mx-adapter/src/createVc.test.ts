@@ -2,8 +2,8 @@ import { VCDataTypes } from "@repo/utils";
 
 import type { AdapterDependencies } from "./models";
 import { logClient } from "./test/utils/logClient";
-import { aggregatorCredentials, cacheClient } from "./adapter.test";
 import { createMxIntGetVC, createMxProdGetVC } from "./createVc";
+import { aggregatorCredentials } from "./test/testData/aggregatorCredentials";
 
 import {
   mxVcAccountsData,
@@ -11,10 +11,11 @@ import {
   mxVcIntegrationAccountsData,
   mxVcTranscationsData,
 } from "./test/testData/mxVcData";
+import { createClient } from "./test/utils/cacheClient";
 
 const dependencies: AdapterDependencies = {
   logClient,
-  cacheClient,
+  cacheClient: createClient(),
   aggregatorCredentials,
   envConfig: {
     HOSTURL: undefined,
