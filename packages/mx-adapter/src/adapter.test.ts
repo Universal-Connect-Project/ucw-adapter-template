@@ -40,9 +40,9 @@ import { server } from "./test/testServer";
 import { createClient as createCacheClient } from "./test/utils/cacheClient";
 import { logClient } from "./test/utils/logClient";
 
-export const cacheClient = createCacheClient();
+const cacheClient = createCacheClient();
 
-export const aggregatorCredentials = {
+const aggregatorCredentials = {
   mxInt: {
     username: null,
     password: null,
