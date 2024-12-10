@@ -1,4 +1,3 @@
-import { getMxAdapterMapObject } from "@ucp-npm/mx-adapter";
 import type { AdapterMap } from "@repo/utils";
 
 import config from "./config";
