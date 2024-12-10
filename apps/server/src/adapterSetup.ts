@@ -1,4 +1,3 @@
-import { getMxAdapterMapObject } from "@ucp-npm/mx-adapter";
 import type { AdapterMap } from "@repo/utils";
 
 import config from "./config";
@@ -7,6 +6,7 @@ import * as logger from "./infra/logger";
 
 import { adapterMapObject as testAdapterMapObject } from "./test-adapter";
 import { getTemplateAdapterMapObject } from "@ucp-npm/template-adapter";
+import { getMxAdapterMapObject } from "@ucp-npm/mx-adapter";
 
 const templateAdapterMapObject = getTemplateAdapterMapObject();
 
