@@ -14,13 +14,43 @@ import getSophtronVc, {
 import { adapterMapObject as testAdapterMapObject } from "./test-adapter";
 
 const templateAdapterMapObject = getTemplateAdapterMapObject();
-const finicityAdapterMapyObject = getFinicityAdapterMapObject();
+const finicityAdapterMapyObject = getFinicityAdapterMapObject({
+  cacheClient: {
+    set: set,
+    get: get,
+  },
+  logClient: logger,
+  aggregatorCredentials: {
+    finicitySandbox: {
+      partnerId: config.FinicityPartnerId,
+      appKey: config.FinicityAppKey,
+      secret: config.FinicitySecret,
+      basePath: "https://api.finicity.com",
+      vcEndpoint: "https://api.finicity.com/",
+      aggregator: "finicity_sandbox",
+      available: true
+    },
+    finicityProd: {
+      partnerId: config.FinicityPartnerIdProd,
+      appKey: config.FinicityAppKeyProd,
+      secret: config.FinicitySecretProd,
+      basePath: "https://api.finicity.com",
+      vcEndpoint: "https://api.finicity.com/",
+      aggregator: "finicity",
+      available: true
+    }
+  },
+  envConfig: {
+    HostUrl: config.HOSTURL,
+    WebhookHostUrl: config.WebhookHostUrl
+  },
+});
 
 const sophtronAdapterMapObject = {
   sophtron: {
     dataAdapter: sophtronDataAdapter,
     vcAdapter: getSophtronVc,
-    widgetAdapter: new SophtronAdapter(),
+    widgetAdapter: () => new SophtronAdapter(),
   },
 };
 
@@ -46,20 +76,20 @@ const mxAdapterMapObject = getMxAdapterMapObject({
       vcEndpoint: "https://api.mx.com/",
       aggregator: "mx",
       available: true,
-    },
+    }
   },
   envConfig: {
-    HOSTURL: config.HOSTURL,
+    HOSTURL: config.HOSTURL
   },
 });
 
 // This is where you add adapters
 export const adapterMap: Record<string, AdapterMap> = {
   ...finicityAdapterMapyObject,
-  ...templateAdapterMapObject,
-  ...mxAdapterMapObject,
+  // ...templateAdapterMapObject,
+  // ...mxAdapterMapObject,
   ...sophtronAdapterMapObject,
-  ...testAdapterMapObject,
+  // ...testAdapterMapObject,
 };
 
 export type Aggregator = keyof typeof adapterMap;

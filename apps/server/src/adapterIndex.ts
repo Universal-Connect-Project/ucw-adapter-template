@@ -7,7 +7,7 @@ export function getAggregatorAdapter(aggregator: Aggregator): WidgetAdapter {
   const widgetAdapter = adapterMap[aggregator]?.widgetAdapter;
 
   if (widgetAdapter) {
-    return widgetAdapter;
+    return widgetAdapter();
   }
 
   throw new Error(`Unsupported aggregator ${aggregator}`);

@@ -48,7 +48,11 @@
   "homepage": "https://github.com/Universal-Connect-Project/ucw-adapter-finicity#readme",
   "dependencies": {
     "@types/jest": "^29.5.13",
-    "@types/node": "^22.7.6"
+    "@types/node": "^22.7.6",
+    "axios": "^1.7.7",
+    "parse-address": "^1.1.2",
+    "parse-full-name": "^1.2.6",
+    "uuid": "^11.0.3"
   },
   "devDependencies": {
     "@testing-library/cypress": "^10.0.2",

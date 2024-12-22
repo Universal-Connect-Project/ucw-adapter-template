@@ -1,25 +1,7 @@
-// Do not remove seemingly unused exports here unless you
-// check all forked Adapter repositories
-// Example: JobTypes is used in the MX Adapter fork
-
-export enum WidgetJobTypes {
-  AGGREGATION = 0,
-  VERIFICATION = 1,
-  IDENTIFICATION = 2,
-  HISTORY = 3,
-  STATEMENT = 4,
-  ORDER = 5,
-  REWARD = 6,
-  BALANCE = 7,
-  MICRO_DEPOSIT = 8,
-  TAX = 9,
-  CREDIT_REPORT = 10,
-}
-
 export enum VCDataTypes {
   ACCOUNTS = "accounts",
   IDENTITY = "identity",
-  TRANSACTIONS = "transactions",
+  TRANSACTIONS = "transactions"
 }
 
 export enum JobTypes {
@@ -31,10 +13,10 @@ export enum JobTypes {
 }
 
 export type AdapterMap = {
-  dataAdapter?: Function;
-  vcAdapter?: Function;
-  widgetAdapter: () => WidgetAdapter;
-};
+  oauthResponseHandler?: Function
+  vcAdapter: Function
+  widgetAdapter: WidgetAdapter
+}
 
 export interface Credential {
   id: string;
@@ -68,7 +50,7 @@ export enum ChallengeType {
   OPTIONS,
   IMAGE,
   IMAGE_OPTIONS,
-  TOKEN,
+  TOKEN
 }
 
 export interface Challenge {
@@ -102,7 +84,7 @@ export enum ConnectionStatus {
   RESUMED,
   EXPIRED,
   IMPAIRED,
-  PENDING,
+  PENDING
 }
 
 export interface CreateConnectionRequest {
@@ -139,23 +121,6 @@ export interface Connection {
   error_message?: string | null;
 }
 
-export interface Connections {
-  members?: Connection[];
-  pagination?: Pagination;
-}
-
-export interface Pagination {
-  current_page?: number;
-  per_page?: number;
-  total_entries?: number;
-  total_pages?: number;
-}
-
-export interface Institutions {
-  institutions: Institution[];
-  pagination?: Pagination;
-}
-
 export interface UpdateConnectionRequest {
   id: string | undefined;
   job_type?: string;
@@ -169,33 +134,32 @@ export interface WidgetAdapter {
   ListInstitutionCredentials: (institutionId: string) => Promise<Credential[]>;
   ListConnectionCredentials: (
     connectionId: string,
-    userId: string,
+    userId: string
   ) => Promise<Credential[]>;
   ListConnections: (userId: string) => Promise<Connection[]>;
   CreateConnection: (
     connection: CreateConnectionRequest,
-    userId?: string,
+    userId?: string
   ) => Promise<Connection | undefined>;
   DeleteConnection: (connectionId: string, userId?: string) => Promise<void>;
   DeleteUser: (userId: string) => Promise<any>;
   AnswerChallenge: (
     request: UpdateConnectionRequest,
     jobId: string,
-    userId?: string,
+    userId?: string
   ) => Promise<boolean>;
   UpdateConnection: (
     UpdateConnectionRequest: UpdateConnectionRequest,
-    userId?: string,
+    userId?: string
   ) => Promise<Connection>;
   GetConnectionById: (
     connectionId: string,
-    userId?: string,
+    userId?: string
   ) => Promise<Connection | undefined>;
   GetConnectionStatus: (
     connectionId: string,
     jobId: string,
     single_account_select?: boolean,
-    userId?: string,
+    userId?: string
   ) => Promise<Connection | undefined>;
-  RouteHandlers?: Record<string, (req: any, res: any) => Promise<void>>;
 }
