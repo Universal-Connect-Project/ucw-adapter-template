@@ -8,7 +8,7 @@ export const getFinicityAdapterMapObject = (dependencies: AdapterDependencies) =
     finicity: {
       testInstitutionAdapterName: "finicity_sandbox",
       vcAdapter: createFinicityProdGetVC(dependencies),
-      widgetAdapter: () => new FinicityAdapter({
+      createWidgetAdapter: () => new FinicityAdapter({
         sandbox: false,
         // sessionId: 'test-session',
         dependencies
@@ -16,7 +16,7 @@ export const getFinicityAdapterMapObject = (dependencies: AdapterDependencies) =
     },
     finicity_sandbox: {
       vcAdapter: createFinicitySandboxGetVC(dependencies),
-      widgetAdapter: () => new FinicityAdapter({
+      createWidgetAdapter: () => new FinicityAdapter({
         sandbox: true,
         // sessionId: 'test-session',
         dependencies
