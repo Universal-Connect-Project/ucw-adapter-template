@@ -1,11 +1,12 @@
 import { default as axios, AxiosInstance } from 'axios';
 import type { LogClient, ApiCredentials } from "./models";
+import { promiseHooks } from 'v8';
 
 function makeFinicityAuthHeaders(apiConfig, tokenRes){
   return {
     'Finicity-App-Key': apiConfig.appKey,
     'Finicity-App-Token': tokenRes.token,
-    'Content-Type': 'application/json',
+    // 'Content-Type': 'application/json', //msw error with this header? 
     'accept': 'application/json'
   }
 }
@@ -42,7 +43,7 @@ export default class FinicityClient{
       .then(ret => ret.institutions)
   }
 
-  getInstitution(institutionId){
+  async getInstitution(institutionId){
     return this.get(`institution/v2/institutions/${institutionId}`)
       .then(ret => ret.institution)
   }
@@ -152,7 +153,7 @@ export default class FinicityClient{
       })
     }
     let ret = await this.axios.request({
-        url: `${this.apiConfig.basePath}/${url}`,
+        url: `${url}`,
         method,
         params,
         data

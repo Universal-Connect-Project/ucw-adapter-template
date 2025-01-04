@@ -65,7 +65,10 @@ const finicityAdapterSandbox = new FinicityAdapter({
     cacheClient,
     logClient,
     aggregatorCredentials,
-    envConfig: process.env
+    envConfig: {
+      HostUrl: 'http://test.universalconnect.org',
+      ...process.env
+    }
   }
 });
 
@@ -76,13 +79,17 @@ const finicityAdapter = new FinicityAdapter({
     cacheClient,
     logClient,
     aggregatorCredentials,
-    envConfig: process.env
+    envConfig: {
+      HostUrl: 'http://test.universalconnect.org',
+      ...process.env
+    }
   }
 });
 
 describe("finicity aggregator", () => {
   describe("GetInsitutionById", () => {
-    
+    it("is dummy", async () => {
+    });
     it("Maps correct fields", async () => {
       const ret = await finicityAdapterSandbox.GetInstitutionById("testId")
       expect(ret).toEqual({

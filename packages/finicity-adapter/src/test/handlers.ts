@@ -36,6 +36,9 @@ const handlers = [
   http.get(`${FINICITY_INT_BASE_PATH}/institution/v2/institutions/testId`, () =>
     HttpResponse.json(institutionDetailData)
   ),
+  http.get(`${FINICITY_BASE_PATH}/institution/v2/institutions/testId`, () =>
+    HttpResponse.json(institutionDetailData)
+  ),
   http.get(`${FINICITY_BASE_PATH}/institution/v2/institutions/nonExistingId`, () =>
     HttpResponse.json({})
   ),
@@ -58,6 +61,9 @@ const handlers = [
     HttpResponse.json(accountsData)
   ),
   http.get(`${FINICITY_INT_BASE_PATH}/aggregation/v1/customers/userId/institutionLogins/connectionId/accounts`, () =>
+    HttpResponse.json(accountsData)
+  ),
+  http.get(`${FINICITY_BASE_PATH}/aggregation/v1/customers/userId/institutionLogins/connectionId/accounts`, () =>
     HttpResponse.json(accountsData)
   ),
   http.get(`${FINICITY_BASE_PATH}/aggregation/v3/customers/userId/accounts/accountId/owner`, () =>
